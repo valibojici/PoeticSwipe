@@ -24,16 +24,19 @@ class PoemRepository implements PoemRepositoryI {
   }
 
   @override
-  Future<Poem?> getOldest() async {
+  Future<Poem> getOldest() async {
     final Isar db = await _isarProvider.open();
     // get a poem that has not been accessed recently
     Poem? poem = await db.poems.where().sortByLastAccess().findFirst();
-    // if its null return null
-    if (poem == null) return null;
+    if (poem == null) throw Exception("No poems");
+    return poem;
+  }
+
+  @override
+  Future<void> markRead(Poem poem) async {
+    final Isar db = await _isarProvider.open();
     // update time access and return
     poem.lastAccess = DateTime.now();
     await db.writeTxn(() => db.poems.put(poem));
-
-    return poem;
   }
 }
