@@ -38,7 +38,7 @@ void main() {
     test('getting poems from DB', () async {
       // put some poems in DB
       List<Poem> poems = [
-        Poem(title: 'title1', author: 'author1', poem: 'poem1'),
+        Poem(title: 'title1', author: 'author1', poem: 'poem1\npoem1\npoem1'),
         Poem(title: 'title2', author: 'author2', poem: 'poem2')
       ];
 
@@ -53,6 +53,8 @@ void main() {
       expect(dbPoems.length, equals(2));
       expect(true, mapEquals(poems[0].toMap(), dbPoems[0].toMap()));
       expect(true, mapEquals(poems[1].toMap(), dbPoems[1].toMap()));
+      expect(dbPoems[0].poem.contains(RegExp(r'\\n')), isFalse);
+      expect(dbPoems[0].poem.split('\n').length, equals(3));
     });
 
     test('populate DB with a poem list', () async {
@@ -76,6 +78,27 @@ void main() {
     test('fetching oldest poems', () async {
       // put some poems in DB
       List<Poem> poems = [
+        Poem(title: 'title1', author: '', poem: ''),
+        Poem(
+            title: 'title3',
+            author: '',
+            poem: '',
+            lastAccessTime: DateTime.now()),
+      ];
+
+      Isar db = await getIt.get<IsarProviderI>().open();
+      await db.writeTxn(() => db.poems.putAll(poems));
+
+      PoemRepository poemRepository =
+          PoemRepository(getIt.get<IsarProviderI>());
+
+      Poem? poem = await poemRepository.getOldest();
+      expect(poem.title, equals('title1'));
+    });
+
+    test('mark poem as read', () async {
+      // put some poems in DB
+      List<Poem> poems = [
         Poem(
             title: 'title3',
             author: '',
@@ -96,16 +119,22 @@ void main() {
           PoemRepository(getIt.get<IsarProviderI>());
 
       Poem? poem = await poemRepository.getOldest();
-      expect(poem!.title, equals('title1'));
+      expect(poem.title, equals('title1'));
+      poem = await poemRepository.getOldest();
+      expect(poem.title, equals('title1'));
+      await poemRepository.markRead(poem);
 
       poem = await poemRepository.getOldest();
-      expect(poem!.title, equals('title2'));
+      await poemRepository.markRead(poem);
+      expect(poem.title, equals('title2'));
 
       poem = await poemRepository.getOldest();
-      expect(poem!.title, equals('title3'));
+      await poemRepository.markRead(poem);
+      expect(poem.title, equals('title3'));
 
       poem = await poemRepository.getOldest();
-      expect(poem!.title, equals('title1'));
+      await poemRepository.markRead(poem);
+      expect(poem.title, equals('title1'));
     });
   });
 
