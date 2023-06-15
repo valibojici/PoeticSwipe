@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:poetry_app/components/poem_card.dart';
 import 'package:poetry_app/models/poem/poem.dart';
+import 'package:poetry_app/pages/settings/settings.dart';
 import 'package:poetry_app/services/interfaces/poem_repository_interface.dart';
 import 'package:poetry_app/services/poem_repository.dart';
 
@@ -20,6 +21,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Poems'),
+        actions: [_settingsButton(context)],
       ),
       body: Center(
         child: FutureBuilder(
@@ -41,11 +43,22 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => setState(() {}),
-        child: Icon(
+        child: const Icon(
           Icons.arrow_right_rounded,
           size: 40.0,
         ),
       ),
+    );
+  }
+
+  Widget _settingsButton(BuildContext context) {
+    return IconButton(
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (c) => const Settings(),
+        ),
+      ),
+      icon: const Icon(Icons.settings),
     );
   }
 }
