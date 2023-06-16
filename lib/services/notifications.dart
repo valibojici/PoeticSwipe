@@ -19,7 +19,7 @@ class NotificationService {
 
   Future init() async {
     const initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('books');
 
     const initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
