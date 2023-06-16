@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="poetry_app"
+        android:label="Poetry"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/books">
         <activity
             android:name=".MainActivity"
             android:exported="true"
