@@ -96,6 +96,72 @@ void main() {
       expect(poem.title, equals('title1'));
     });
 
+    test('fetching poems by id', () async {
+      // put some poems in DB
+      List<Poem> poems = [
+        Poem(title: 'title1', author: '', poem: ''),
+        Poem(title: 'title2', author: '', poem: ''),
+      ];
+
+      Isar db = await getIt.get<IsarProviderI>().open();
+      await db.writeTxn(() => db.poems.putAll(poems));
+
+      PoemRepository poemRepository =
+          PoemRepository(getIt.get<IsarProviderI>());
+
+      int poemId1 = (await db.poems
+          .filter()
+          .titleEqualTo('title1')
+          .idProperty()
+          .findFirst())!;
+      int poemId2 = (await db.poems
+          .filter()
+          .titleEqualTo('title2')
+          .idProperty()
+          .findFirst())!;
+      Poem poem1 = (await db.poems.filter().idEqualTo(poemId1).findFirst())!;
+      Poem poem2 = (await db.poems.filter().idEqualTo(poemId2).findFirst())!;
+      expect(poems[0].title, poem1.title);
+      expect(poems[1].title, poem2.title);
+    });
+
+    test('fetching oldest ids', () async {
+      // put some poems in DB
+      List<Poem> poems = [
+        Poem(
+            title: 'title2',
+            author: '',
+            poem: '',
+            lastAccessTime: DateTime.now().subtract(Duration(days: 1))),
+        Poem(
+            title: 'title3',
+            author: '',
+            poem: '',
+            lastAccessTime: DateTime.now()),
+        Poem(
+            title: 'title1',
+            author: '',
+            poem: '',
+            lastAccessTime: DateTime.now().subtract(Duration(days: 2))),
+      ];
+
+      Isar db = await getIt.get<IsarProviderI>().open();
+      await db.writeTxn(() => db.poems.putAll(poems));
+
+      PoemRepository poemRepository =
+          PoemRepository(getIt.get<IsarProviderI>());
+
+      List<int> ids =
+          await db.poems.where().sortByLastAccess().idProperty().findAll();
+
+      List<Poem> fetchedPoems = await Future.wait(
+          ids.map((e) async => (await poemRepository.findById(e))!).toList());
+
+      expect(fetchedPoems[0].title, 'title1');
+      expect(fetchedPoems[1].title, 'title2');
+      expect(fetchedPoems[2].title, 'title3');
+    });
+
     test('mark poem as read', () async {
       // put some poems in DB
       List<Poem> poems = [
