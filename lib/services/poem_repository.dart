@@ -39,4 +39,21 @@ class PoemRepository implements PoemRepositoryI {
     poem.lastAccess = DateTime.now();
     await db.writeTxn(() => db.poems.put(poem));
   }
+
+  @override
+  Future<Poem?> findById(int id) async {
+    final Isar db = await _isarProvider.open();
+    return await db.poems.get(id);
+  }
+
+  @override
+  Future<List<int>> getOldestAll({int limit = 5}) async {
+    final Isar db = await _isarProvider.open();
+    return db.poems
+        .where()
+        .sortByLastAccess()
+        .limit(limit)
+        .idProperty()
+        .findAll();
+  }
 }
