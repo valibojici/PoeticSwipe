@@ -7,5 +7,9 @@ abstract class PoemRepositoryI {
   Future<void> markRead(Poem poem);
 
   Future<Poem?> findById(int id);
-  Future<List<int>> getOldestAll({int limit = 5});
+  Future<List<Poem?>> findAllById(List<int> ids);
+  Future<List<Poem?>> getOldestAll({int limit = 5});
+
+  Future<Stream<List<int>>> favoritesStream();
+  Future<void> toggleFavorite(Poem poem);
 }

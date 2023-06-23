@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:poetry_app/models/poem/poem.dart';
+import 'package:poetry_app/providers/favorite_provider.dart';
+import 'package:poetry_app/providers/poem_provider.dart';
+import 'package:provider/provider.dart';
 
 class PoemView extends StatelessWidget {
   final Poem poem;
@@ -13,8 +16,25 @@ class PoemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final favoriteProvider = Provider.of<FavoriteProvider>(context);
+    final poemProvider = Provider.of<PoemProvider>(context, listen: false);
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
+        shadowColor: Colors.transparent,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await favoriteProvider.favoritePoem(poem);
+                poemProvider.refreshPoem(poem.id);
+              },
+              icon: Icon(poem.favoriteTime != null
+                  ? Icons.favorite
+                  : Icons.favorite_outline)),
+        ],
+      ),
       body: SingleChildScrollView(
         key: ObjectKey(poem.id),
         child: Center(

@@ -22,18 +22,23 @@ const PoemSchema = CollectionSchema(
       name: r'author',
       type: IsarType.string,
     ),
-    r'lastAccess': PropertySchema(
+    r'favoriteTime': PropertySchema(
       id: 1,
+      name: r'favoriteTime',
+      type: IsarType.dateTime,
+    ),
+    r'lastAccess': PropertySchema(
+      id: 2,
       name: r'lastAccess',
       type: IsarType.dateTime,
     ),
     r'poem': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'poem',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'title',
       type: IsarType.string,
     )
@@ -71,9 +76,10 @@ void _poemSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.author);
-  writer.writeDateTime(offsets[1], object.lastAccess);
-  writer.writeString(offsets[2], object.poem);
-  writer.writeString(offsets[3], object.title);
+  writer.writeDateTime(offsets[1], object.favoriteTime);
+  writer.writeDateTime(offsets[2], object.lastAccess);
+  writer.writeString(offsets[3], object.poem);
+  writer.writeString(offsets[4], object.title);
 }
 
 Poem _poemDeserialize(
@@ -84,11 +90,12 @@ Poem _poemDeserialize(
 ) {
   final object = Poem(
     author: reader.readString(offsets[0]),
-    poem: reader.readString(offsets[2]),
-    title: reader.readString(offsets[3]),
+    favoriteTime: reader.readDateTimeOrNull(offsets[1]),
+    poem: reader.readString(offsets[3]),
+    title: reader.readString(offsets[4]),
   );
   object.id = id;
-  object.lastAccess = reader.readDateTime(offsets[1]);
+  object.lastAccess = reader.readDateTime(offsets[2]);
   return object;
 }
 
@@ -102,10 +109,12 @@ P _poemDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 3:
+      return (reader.readString(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -324,6 +333,75 @@ extension PoemQueryFilter on QueryBuilder<Poem, Poem, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'author',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> favoriteTimeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'favoriteTime',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> favoriteTimeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'favoriteTime',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> favoriteTimeEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'favoriteTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> favoriteTimeGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'favoriteTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> favoriteTimeLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'favoriteTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> favoriteTimeBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'favoriteTime',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -707,6 +785,18 @@ extension PoemQuerySortBy on QueryBuilder<Poem, Poem, QSortBy> {
     });
   }
 
+  QueryBuilder<Poem, Poem, QAfterSortBy> sortByFavoriteTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'favoriteTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterSortBy> sortByFavoriteTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'favoriteTime', Sort.desc);
+    });
+  }
+
   QueryBuilder<Poem, Poem, QAfterSortBy> sortByLastAccess() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastAccess', Sort.asc);
@@ -754,6 +844,18 @@ extension PoemQuerySortThenBy on QueryBuilder<Poem, Poem, QSortThenBy> {
   QueryBuilder<Poem, Poem, QAfterSortBy> thenByAuthorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'author', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterSortBy> thenByFavoriteTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'favoriteTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterSortBy> thenByFavoriteTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'favoriteTime', Sort.desc);
     });
   }
 
@@ -814,6 +916,12 @@ extension PoemQueryWhereDistinct on QueryBuilder<Poem, Poem, QDistinct> {
     });
   }
 
+  QueryBuilder<Poem, Poem, QDistinct> distinctByFavoriteTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'favoriteTime');
+    });
+  }
+
   QueryBuilder<Poem, Poem, QDistinct> distinctByLastAccess() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastAccess');
@@ -845,6 +953,12 @@ extension PoemQueryProperty on QueryBuilder<Poem, Poem, QQueryProperty> {
   QueryBuilder<Poem, String, QQueryOperations> authorProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'author');
+    });
+  }
+
+  QueryBuilder<Poem, DateTime?, QQueryOperations> favoriteTimeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'favoriteTime');
     });
   }
 

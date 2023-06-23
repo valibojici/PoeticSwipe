@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -119,8 +120,8 @@ void main() {
           .titleEqualTo('title2')
           .idProperty()
           .findFirst())!;
-      Poem poem1 = (await db.poems.filter().idEqualTo(poemId1).findFirst())!;
-      Poem poem2 = (await db.poems.filter().idEqualTo(poemId2).findFirst())!;
+      Poem poem1 = (await poemRepository.findById(poemId1))!;
+      Poem poem2 = (await poemRepository.findById(poemId2))!;
       expect(poems[0].title, poem1.title);
       expect(poems[1].title, poem2.title);
     });
@@ -162,6 +163,38 @@ void main() {
       expect(fetchedPoems[2].title, 'title3');
     });
 
+    test('fetching oldest poems in batch', () async {
+      PoemRepository poemRepository =
+          PoemRepository(getIt.get<IsarProviderI>());
+
+      List<Poem> initialPoems = [
+        Poem(
+            title: 'title1',
+            author: '',
+            poem: '',
+            lastAccessTime: DateTime.now()),
+        Poem(
+            title: 'title2',
+            author: '',
+            poem: '',
+            lastAccessTime: DateTime.now().subtract(Duration(days: 1))),
+        Poem(
+            title: 'title3',
+            author: '',
+            poem: '',
+            lastAccessTime: DateTime.now().add(Duration(days: 1))),
+      ];
+      await poemRepository.populate(initialPoems);
+
+      final List<String> oldestPoems =
+          List<Poem>.from(await poemRepository.getOldestAll(limit: 2))
+              .map((e) => e.title)
+              .toList();
+
+      expect(oldestPoems.length, equals(2));
+      expect(oldestPoems, containsAllInOrder(['title2', 'title1']));
+    });
+
     test('mark poem as read', () async {
       // put some poems in DB
       List<Poem> poems = [
@@ -201,6 +234,75 @@ void main() {
       poem = await poemRepository.getOldest();
       await poemRepository.markRead(poem);
       expect(poem.title, equals('title1'));
+    });
+
+    test('test fetching all by id', () async {
+      PoemRepository poemRepository =
+          PoemRepository(getIt.get<IsarProviderI>());
+
+      await poemRepository.populate([
+        Poem(title: 'title1', author: '', poem: ''),
+        Poem(title: 'title2', author: '', poem: ''),
+        Poem(title: 'title3', author: '', poem: ''),
+      ]);
+
+      final List<int> ids = (await poemRepository.getAll())
+          .where((element) => element.title != 'title3')
+          .map((e) => e.id)
+          .toList();
+
+      final List<String> poemTitles =
+          List<Poem>.from(await poemRepository.findAllById(ids))
+              .map((e) => e.title)
+              .toList();
+
+      expect(poemTitles.length, equals(2));
+      expect(poemTitles, containsAll(['title1', 'title2']));
+    });
+
+    test('toggle favorite test', () async {
+      PoemRepository poemRepository =
+          PoemRepository(getIt.get<IsarProviderI>());
+      List<Poem> initialPoems = [
+        Poem(title: 'title1', author: '', poem: ''),
+        Poem(title: 'title2', author: '', poem: ''),
+      ];
+      await poemRepository.populate(initialPoems);
+
+      expect(initialPoems.map((e) => e.favoriteTime), equals([null, null]));
+
+      await poemRepository.toggleFavorite(initialPoems[1]);
+
+      expect(initialPoems[0].favoriteTime, isNull);
+      expect(initialPoems[1].favoriteTime, isNotNull);
+
+      await poemRepository.toggleFavorite(initialPoems[1]);
+      expect(initialPoems.map((e) => e.favoriteTime), equals([null, null]));
+    });
+
+    test('favorites stream', () async {
+      PoemRepository poemRepository =
+          PoemRepository(getIt.get<IsarProviderI>());
+      List<Poem> initialPoems = [
+        Poem(title: 'title1', author: '', poem: ''),
+        Poem(title: 'title2', author: '', poem: ''),
+      ];
+      await poemRepository.populate(initialPoems);
+
+      Stream<List<int>> favoriteStream = await poemRepository.favoritesStream();
+
+      expectLater(
+          favoriteStream,
+          emitsInOrder([
+            [],
+            [initialPoems[0].id],
+            [initialPoems[1].id, initialPoems[0].id],
+            [initialPoems[1].id],
+          ]));
+
+      await poemRepository.toggleFavorite(initialPoems[0]);
+      await poemRepository.toggleFavorite(initialPoems[1]);
+      await poemRepository.toggleFavorite(initialPoems[0]);
     });
   });
 
