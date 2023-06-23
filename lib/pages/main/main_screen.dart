@@ -47,7 +47,6 @@ class _MainScreenState extends State<MainScreen> {
         children: _pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        fixedColor: Colors.black,
         currentIndex: _currentIndex,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

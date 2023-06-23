@@ -31,4 +31,14 @@ class SettingsService implements SettingsServiceI {
   bool getNotificationsEnabled() {
     return _sharedPreferences.getBool('notificationsEnabled') ?? false;
   }
+
+  @override
+  bool getDarkModeEnabled() {
+    return _sharedPreferences.getBool('darkMode_enabled') ?? false;
+  }
+
+  @override
+  void setDarkMode(bool value) async {
+    await _sharedPreferences.setBool('darkMode_enabled', value);
+  }
 }

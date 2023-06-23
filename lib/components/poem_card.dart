@@ -1,18 +1,18 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:poetry_app/models/poem/poem.dart';
 import 'package:poetry_app/pages/poem/poem.dart';
+import 'package:poetry_app/themes/theme.dart';
+import 'package:provider/provider.dart';
 
 class PoemCard extends StatelessWidget {
   final Poem? poem;
-  final Color color;
+  final MaterialColor color;
   final Function()? onDoubleTap;
 
   const PoemCard(
       {super.key,
       required this.poem,
-      this.color = const Color.fromRGBO(255, 224, 178, 1),
+      this.color = Colors.amber,
       this.onDoubleTap});
   final TextStyle titleStyle =
       const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
@@ -29,7 +29,9 @@ class PoemCard extends StatelessWidget {
       onDoubleTap: onDoubleTap,
       child: Card(
         elevation: 16,
-        color: color,
+        color: Provider.of<ThemeProvider>(context).darkModeEnabled
+            ? _getColor(true, color)
+            : _getColor(false, color),
         // color: Colors.orange[100],
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -63,6 +65,17 @@ class PoemCard extends StatelessWidget {
 
   Widget _getIcon() {
     return Icon(
+        color: Colors.red[600],
         poem!.favoriteTime == null ? Icons.favorite_border : Icons.favorite);
+  }
+
+  Color _getColor(bool darkMode, MaterialColor color) {
+    if (!darkMode) {
+      return color.shade50;
+    }
+    Color temp = color.shade900;
+    const L = 0.1;
+    return Color.fromRGBO((temp.red * L).round(), (temp.green * L).round(),
+        (temp.blue * L).round(), 1);
   }
 }

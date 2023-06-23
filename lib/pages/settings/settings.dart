@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:poetry_app/services/interfaces/settings_interface.dart';
 import 'package:poetry_app/services/notifications.dart';
+import 'package:poetry_app/themes/theme.dart';
+import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -34,6 +36,8 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text("Settings")),
       body: _isLoading
@@ -44,6 +48,7 @@ class _SettingsState extends State<Settings> {
                 children: [
                   _notificationsToggle(),
                   _notificationsTime(),
+                  _darkModeToggle(themeProvider),
                 ],
               ),
             ),
@@ -124,4 +129,15 @@ class _SettingsState extends State<Settings> {
             hour: _settingsService.getNotificationHour(),
             minute: _settingsService.getNotificationMinutes()),
       );
+
+  Widget _darkModeToggle(ThemeProvider themeProvider) {
+    return ListTile(
+      title: const Text('Enable dark mode'),
+      trailing: Switch(
+          value: themeProvider.darkModeEnabled,
+          onChanged: (value) {
+            themeProvider.setTheme(value ? ThemeType.dark : ThemeType.light);
+          }),
+    );
+  }
 }

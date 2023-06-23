@@ -30,9 +30,11 @@ class PoemView extends StatelessWidget {
                 await favoriteProvider.favoritePoem(poem);
                 poemProvider.refreshPoem(poem.id);
               },
-              icon: Icon(poem.favoriteTime != null
-                  ? Icons.favorite
-                  : Icons.favorite_outline)),
+              icon: Icon(
+                  color: Colors.red[600],
+                  poem.favoriteTime != null
+                      ? Icons.favorite
+                      : Icons.favorite_outline)),
         ],
       ),
       body: SingleChildScrollView(

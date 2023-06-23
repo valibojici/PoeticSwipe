@@ -14,6 +14,7 @@ import 'package:poetry_app/services/poem_csv_parser.dart';
 import 'package:poetry_app/services/poem_repository.dart';
 import 'package:poetry_app/services/root_bundle_provider.dart';
 import 'package:poetry_app/services/settings.dart';
+import 'package:poetry_app/themes/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,24 +44,23 @@ class PoetryApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => PoemProvider(batchSize: 10)),
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider())
       ],
-      child: MaterialApp(
-        title: 'Poetry',
-        theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.black,
-            shadowColor: Colors.transparent,
-          ),
-        ),
-        home: FutureBuilder(
-            future: loadDB,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return const MainScreen();
-              }
-              return _loading();
-            }),
+      child: Consumer<ThemeProvider>(
+        builder: (context, value, child) {
+          return MaterialApp(
+            title: 'Poetry',
+            theme: value.theme,
+            home: FutureBuilder(
+                future: loadDB,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return const MainScreen();
+                  }
+                  return _loading();
+                }),
+          );
+        },
       ),
     );
   }

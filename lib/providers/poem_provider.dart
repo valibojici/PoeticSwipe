@@ -11,7 +11,7 @@ class PoemProvider extends ChangeNotifier {
   bool isLoading = false;
 
   List<Poem> poems = [];
-  List<Color> colors = [];
+  List<MaterialColor> colors = [];
   final PoemRepositoryI _poemRepo = GetIt.I.get<PoemRepositoryI>();
 
   List<Future<void>> _poemMarkReadFutures = [];
@@ -34,15 +34,19 @@ class PoemProvider extends ChangeNotifier {
       await Future.wait(_poemMarkReadFutures);
       _poemMarkReadFutures = [];
       poems = List<Poem>.from(await _poemRepo.getOldestAll(limit: _batchSize));
-      colors = List<Color>.generate(poems.length, (_) => _getRandomColor());
+      colors =
+          List<MaterialColor>.generate(poems.length, (_) => _getRandomColor());
     });
   }
 
-  Color _getRandomColor() {
-    return Colors.primaries[Random().nextInt(Colors.primaries.length)].shade50;
+  MaterialColor _getRandomColor() {
+    // return Color.fromRGBO(
+    //     Random().nextInt(40), Random().nextInt(40), Random().nextInt(40), 1);
+    Random().nextDouble() * 50;
+    return Colors.primaries[Random().nextInt(Colors.primaries.length)];
   }
 
-  Color getColor(int index) {
+  MaterialColor getColor(int index) {
     return colors[index % _batchSize];
   }
 
