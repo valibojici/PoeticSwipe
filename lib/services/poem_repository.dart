@@ -47,13 +47,41 @@ class PoemRepository implements PoemRepositoryI {
   }
 
   @override
-  Future<List<int>> getOldestAll({int limit = 5}) async {
+  Future<List<Poem?>> getOldestAll({int limit = 5}) async {
     final Isar db = await _isarProvider.open();
+    return await db.poems.where().sortByLastAccess().limit(limit).findAll();
+  }
+
+  @override
+  Future<List<Poem>> getFavoritesAll() async {
+    final Isar db = await _isarProvider.open();
+    return db.poems.where().filter().favoriteTimeIsNotNull().findAll();
+  }
+
+  @override
+  Future<void> toggleFavorite(Poem poem) async {
+    final Isar db = await _isarProvider.open();
+    poem.favoriteTime = poem.favoriteTime == null ? DateTime.now() : null;
+
+    await db.writeTxn(() async => await db.poems.put(poem));
+  }
+
+  @override
+  Future<Stream<List<int>>> favoritesStream() async {
+    final Isar db = await _isarProvider.open();
+
     return db.poems
-        .where()
-        .sortByLastAccess()
-        .limit(limit)
+        .filter()
+        .favoriteTimeIsNotNull()
+        .sortByFavoriteTimeDesc()
+        .thenByFavoriteTimeDesc()
         .idProperty()
-        .findAll();
+        .watch(fireImmediately: true);
+  }
+
+  @override
+  Future<List<Poem?>> findAllById(List<int> ids) async {
+    final Isar db = await _isarProvider.open();
+    return await db.poems.getAll(ids);
   }
 }
