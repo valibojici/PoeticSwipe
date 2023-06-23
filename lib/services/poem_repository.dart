@@ -53,12 +53,6 @@ class PoemRepository implements PoemRepositoryI {
   }
 
   @override
-  Future<List<Poem>> getFavoritesAll() async {
-    final Isar db = await _isarProvider.open();
-    return db.poems.where().filter().favoriteTimeIsNotNull().findAll();
-  }
-
-  @override
   Future<void> toggleFavorite(Poem poem) async {
     final Isar db = await _isarProvider.open();
     poem.favoriteTime = poem.favoriteTime == null ? DateTime.now() : null;
