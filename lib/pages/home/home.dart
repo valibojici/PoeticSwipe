@@ -40,10 +40,9 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
                       return Consumer<FavoriteProvider>(
                           builder: (context, favorites, child) {
                         return PoemCard(
-                            onDoubleTap: () async {
+                            onDoubleTap: () {
                               if (favorites.is_loading) return;
-                              await favorites.favoritePoem(poem);
-                              provider.refreshPoem(poem.id);
+                              favorites.favoritePoem(poem);
                             },
                             poem: poem,
                             color: provider.getColor(index));
