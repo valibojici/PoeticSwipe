@@ -4,4 +4,7 @@ abstract class SettingsServiceI {
   bool getNotificationsEnabled();
   int getNotificationHour();
   int getNotificationMinutes();
+
+  bool getDarkModeEnabled();
+  void setDarkMode(bool value);
 }
