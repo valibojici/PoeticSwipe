@@ -10,12 +10,14 @@ class Poem {
   String author;
   String poem;
   DateTime lastAccess;
+  DateTime? favoriteTime;
 
   Poem(
       {required this.title,
       required this.author,
       required this.poem,
-      DateTime? lastAccessTime})
+      DateTime? lastAccessTime,
+      this.favoriteTime})
       : lastAccess = lastAccessTime ?? DateTime(1970);
 
   Map<String, dynamic> toMap() {
