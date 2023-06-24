@@ -19,9 +19,9 @@ class ThemeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setTheme(ThemeType themeType) {
+  void setTheme(ThemeType themeType) async {
     darkModeEnabled = themeType == ThemeType.dark;
-
+    await prefs.setDarkMode(darkModeEnabled);
     notifyListeners();
   }
 
