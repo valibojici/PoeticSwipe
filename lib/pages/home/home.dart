@@ -37,16 +37,8 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
                     onEnd: provider.loadPoemBatch,
                     cardsBuilder: (_, int index) {
                       Poem? poem = provider.getPoem(index);
-                      return Consumer<FavoriteProvider>(
-                          builder: (context, favorites, child) {
-                        return PoemCard(
-                            onDoubleTap: () {
-                              if (favorites.is_loading) return;
-                              favorites.favoritePoem(poem);
-                            },
-                            poem: poem,
-                            color: provider.getColor(index));
-                      });
+                      return PoemCard(
+                          poem: poem, color: provider.getColor(index));
                     },
                   ),
                 ),

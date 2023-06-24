@@ -17,28 +17,23 @@ class PoemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final favoriteProvider = Provider.of<FavoriteProvider>(context);
-    final poemProvider = Provider.of<PoemProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
-        shadowColor: Colors.transparent,
         actions: [
           IconButton(
-              onPressed: () async {
-                await favoriteProvider.favoritePoem(poem);
-                poemProvider.refreshPoem(poem.id);
-              },
-              icon: Icon(
-                  color: Colors.red[600],
-                  poem.favoriteTime != null
-                      ? Icons.favorite
-                      : Icons.favorite_outline)),
+            onPressed: () => favoriteProvider.isLoading
+                ? null
+                : favoriteProvider.favoritePoem(poem),
+            icon: Icon(
+                color: Colors.red[600],
+                favoriteProvider.favoritesIds.contains(poem.id)
+                    ? Icons.favorite
+                    : Icons.favorite_outline),
+          ),
         ],
       ),
       body: SingleChildScrollView(
-        key: ObjectKey(poem.id),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
