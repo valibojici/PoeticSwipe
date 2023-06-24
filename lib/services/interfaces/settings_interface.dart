@@ -6,5 +6,5 @@ abstract class SettingsServiceI {
   int getNotificationMinutes();
 
   bool getDarkModeEnabled();
-  void setDarkMode(bool value);
+  Future<void> setDarkMode(bool value);
 }

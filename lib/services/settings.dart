@@ -38,7 +38,7 @@ class SettingsService implements SettingsServiceI {
   }
 
   @override
-  void setDarkMode(bool value) async {
+  Future<void> setDarkMode(bool value) async {
     await _sharedPreferences.setBool('darkMode_enabled', value);
   }
 }
