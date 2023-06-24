@@ -40,10 +40,12 @@ class FavoriteProvider extends ChangeNotifier {
       favoritesIds.insert(0, poem.id);
       await _poemRepo.toggleFavorite(poem);
       loadedPoems.insert(0, (await _poemRepo.findById(poem.id))!);
+      loadedCount++;
     } else {
       favoritesIds.removeWhere((id) => id == poem.id);
       await _poemRepo.toggleFavorite(poem);
       loadedPoems.removeWhere((p) => p.id == poem.id);
+      loadedCount--;
     }
 
     // isLoading = false;
