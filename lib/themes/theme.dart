@@ -26,33 +26,39 @@ class ThemeProvider with ChangeNotifier {
   }
 
   static final ThemeData LightTheme = ThemeData(
+    brightness: Brightness.light,
+    appBarTheme: const AppBarTheme(
+      shadowColor: Colors.transparent,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+    ),
+    colorScheme: const ColorScheme(
       brightness: Brightness.light,
-      appBarTheme: const AppBarTheme(shadowColor: Colors.transparent),
-      colorScheme: const ColorScheme(
-        brightness: Brightness.light,
-        primary: Colors.white,
-        onPrimary: Colors.black,
-        secondary: Colors.teal,
-        onSecondary: Colors.white,
-        error: Colors.red,
-        onError: Colors.white,
-        background: Colors.white,
-        onBackground: Colors.black,
-        surface: Colors.white,
-        onSurface: Colors.black,
-      ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey[600],
-      ));
+      primary: Colors.green,
+      onPrimary: Colors.black,
+      secondary: Colors.blueGrey,
+      onSecondary: Colors.white,
+      error: Colors.red,
+      onError: Colors.white,
+      background: Colors.white,
+      onBackground: Colors.black,
+      surface: Colors.white,
+      onSurface: Colors.black,
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      selectedItemColor: Colors.black,
+      backgroundColor: Colors.white,
+      unselectedItemColor: Colors.grey[600],
+    ),
+  );
 
   static final ThemeData DarkTheme = ThemeData(
     brightness: Brightness.dark,
-    colorScheme: const ColorScheme(
+    colorScheme: ColorScheme(
       brightness: Brightness.dark,
-      primary: Colors.black,
+      primary: Colors.orange.shade900,
       onPrimary: Colors.white,
-      secondary: Colors.green,
+      secondary: Colors.blue.shade800,
       onSecondary: Colors.white,
       error: Colors.red,
       onError: Colors.white,
@@ -60,6 +66,10 @@ class ThemeProvider with ChangeNotifier {
       onBackground: Colors.white,
       surface: Colors.black,
       onSurface: Colors.white,
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      selectedItemColor: Colors.white,
+      unselectedItemColor: Colors.grey[500],
     ),
   );
 }
