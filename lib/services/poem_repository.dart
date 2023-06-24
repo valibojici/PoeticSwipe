@@ -61,21 +61,18 @@ class PoemRepository implements PoemRepositoryI {
   }
 
   @override
-  Future<Stream<List<int>>> favoritesStream() async {
-    final Isar db = await _isarProvider.open();
-
-    return db.poems
-        .filter()
-        .favoriteTimeIsNotNull()
-        .sortByFavoriteTimeDesc()
-        .thenByFavoriteTimeDesc()
-        .idProperty()
-        .watch(fireImmediately: true);
-  }
-
-  @override
   Future<List<Poem?>> findAllById(List<int> ids) async {
     final Isar db = await _isarProvider.open();
     return await db.poems.getAll(ids);
+  }
+
+  @override
+  Future<List<int>> getFavorites() async {
+    final Isar db = await _isarProvider.open();
+    return await db.poems
+        .filter()
+        .favoriteTimeIsNotNull()
+        .idProperty()
+        .findAll();
   }
 }
