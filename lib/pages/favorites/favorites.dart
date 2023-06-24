@@ -17,13 +17,12 @@ class _FavoritesState extends State<Favorites>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Consumer2<PoemProvider, FavoriteProvider>(
-      builder: (context, poemProvider, favoritesProvider, child) {
-        if (favoritesProvider.is_loading) {
+    return Consumer<FavoriteProvider>(
+      builder: (context, favoritesProvider, child) {
+        if (favoritesProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (favoritesProvider.loadedAllPoems &&
-            favoritesProvider.favoritesIds.isEmpty) {
+        if (favoritesProvider.favoritesIds.isEmpty) {
           return const Center(child: Text('No saved poems'));
         }
         return ListView.builder(
