@@ -10,9 +10,9 @@ This simple app allows you to browse through a collection of poems, swipe throug
 ## Demo
 [Youtube](https://youtu.be/rUEGKxdqH2E)
 
- <img src="https://github.com/valibojici/poetry/assets/68808448/0ecbed51-fafd-42a6-9cbb-6688252abbff" width=20%>
- <img src="https://github.com/valibojici/poetry/assets/68808448/762f1c17-67c3-4097-8061-065f69021c4e" width=20%>
-<img src="https://github.com/valibojici/poetry/assets/68808448/6532c5ca-f024-4e3e-99b9-2aff29fa2d9d" width=20%>
+ <img src="https://github.com/valibojici/poetry/assets/68808448/3a65f039-d988-4dd2-a175-b7e898d5aa50" width=20%>
+ <img src="https://github.com/valibojici/poetry/assets/68808448/9d0d7280-b1cf-4917-bbc2-33f7746c3bae" width=20%>
+ <img src="https://github.com/valibojici/poetry/assets/68808448/609cfcbc-4f6d-4c10-b93d-314530bddd29" width=20%>
 
 ## Things I learned
 #### Mocking with Mockito
