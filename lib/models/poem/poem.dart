@@ -28,4 +28,13 @@ class Poem {
       'lastAccess': lastAccess
     };
   }
+
+  @Index(caseSensitive: false)
+  List<String> get poemWords => Isar.splitWords(poem);
+
+  @Index(caseSensitive: false)
+  List<String> get authorWords => Isar.splitWords(author);
+
+  @Index(caseSensitive: false)
+  List<String> get titleWords => Isar.splitWords(title);
 }

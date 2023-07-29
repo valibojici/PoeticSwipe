@@ -22,25 +22,40 @@ const PoemSchema = CollectionSchema(
       name: r'author',
       type: IsarType.string,
     ),
-    r'favoriteTime': PropertySchema(
+    r'authorWords': PropertySchema(
       id: 1,
+      name: r'authorWords',
+      type: IsarType.stringList,
+    ),
+    r'favoriteTime': PropertySchema(
+      id: 2,
       name: r'favoriteTime',
       type: IsarType.dateTime,
     ),
     r'lastAccess': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'lastAccess',
       type: IsarType.dateTime,
     ),
     r'poem': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'poem',
       type: IsarType.string,
     ),
+    r'poemWords': PropertySchema(
+      id: 5,
+      name: r'poemWords',
+      type: IsarType.stringList,
+    ),
     r'title': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'title',
       type: IsarType.string,
+    ),
+    r'titleWords': PropertySchema(
+      id: 7,
+      name: r'titleWords',
+      type: IsarType.stringList,
     )
   },
   estimateSize: _poemEstimateSize,
@@ -48,7 +63,47 @@ const PoemSchema = CollectionSchema(
   deserialize: _poemDeserialize,
   deserializeProp: _poemDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'poemWords': IndexSchema(
+      id: -7828522452017812577,
+      name: r'poemWords',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'poemWords',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'authorWords': IndexSchema(
+      id: 6639498329514008261,
+      name: r'authorWords',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'authorWords',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'titleWords': IndexSchema(
+      id: 80481505061976672,
+      name: r'titleWords',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'titleWords',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _poemGetId,
@@ -64,8 +119,29 @@ int _poemEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.author.length * 3;
+  bytesCount += 3 + object.authorWords.length * 3;
+  {
+    for (var i = 0; i < object.authorWords.length; i++) {
+      final value = object.authorWords[i];
+      bytesCount += value.length * 3;
+    }
+  }
   bytesCount += 3 + object.poem.length * 3;
+  bytesCount += 3 + object.poemWords.length * 3;
+  {
+    for (var i = 0; i < object.poemWords.length; i++) {
+      final value = object.poemWords[i];
+      bytesCount += value.length * 3;
+    }
+  }
   bytesCount += 3 + object.title.length * 3;
+  bytesCount += 3 + object.titleWords.length * 3;
+  {
+    for (var i = 0; i < object.titleWords.length; i++) {
+      final value = object.titleWords[i];
+      bytesCount += value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -76,10 +152,13 @@ void _poemSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.author);
-  writer.writeDateTime(offsets[1], object.favoriteTime);
-  writer.writeDateTime(offsets[2], object.lastAccess);
-  writer.writeString(offsets[3], object.poem);
-  writer.writeString(offsets[4], object.title);
+  writer.writeStringList(offsets[1], object.authorWords);
+  writer.writeDateTime(offsets[2], object.favoriteTime);
+  writer.writeDateTime(offsets[3], object.lastAccess);
+  writer.writeString(offsets[4], object.poem);
+  writer.writeStringList(offsets[5], object.poemWords);
+  writer.writeString(offsets[6], object.title);
+  writer.writeStringList(offsets[7], object.titleWords);
 }
 
 Poem _poemDeserialize(
@@ -90,12 +169,12 @@ Poem _poemDeserialize(
 ) {
   final object = Poem(
     author: reader.readString(offsets[0]),
-    favoriteTime: reader.readDateTimeOrNull(offsets[1]),
-    poem: reader.readString(offsets[3]),
-    title: reader.readString(offsets[4]),
+    favoriteTime: reader.readDateTimeOrNull(offsets[2]),
+    poem: reader.readString(offsets[4]),
+    title: reader.readString(offsets[6]),
   );
   object.id = id;
-  object.lastAccess = reader.readDateTime(offsets[2]);
+  object.lastAccess = reader.readDateTime(offsets[3]);
   return object;
 }
 
@@ -109,13 +188,19 @@ P _poemDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readStringList(offset) ?? []) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
+      return (reader.readStringList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -204,6 +289,141 @@ extension PoemQueryWhere on QueryBuilder<Poem, Poem, QWhereClause> {
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterWhereClause> poemWordsEqualTo(
+      List<String> poemWords) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'poemWords',
+        value: [poemWords],
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterWhereClause> poemWordsNotEqualTo(
+      List<String> poemWords) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'poemWords',
+              lower: [],
+              upper: [poemWords],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'poemWords',
+              lower: [poemWords],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'poemWords',
+              lower: [poemWords],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'poemWords',
+              lower: [],
+              upper: [poemWords],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterWhereClause> authorWordsEqualTo(
+      List<String> authorWords) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'authorWords',
+        value: [authorWords],
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterWhereClause> authorWordsNotEqualTo(
+      List<String> authorWords) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'authorWords',
+              lower: [],
+              upper: [authorWords],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'authorWords',
+              lower: [authorWords],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'authorWords',
+              lower: [authorWords],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'authorWords',
+              lower: [],
+              upper: [authorWords],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterWhereClause> titleWordsEqualTo(
+      List<String> titleWords) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'titleWords',
+        value: [titleWords],
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterWhereClause> titleWordsNotEqualTo(
+      List<String> titleWords) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'titleWords',
+              lower: [],
+              upper: [titleWords],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'titleWords',
+              lower: [titleWords],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'titleWords',
+              lower: [titleWords],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'titleWords',
+              lower: [],
+              upper: [titleWords],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }
@@ -334,6 +554,221 @@ extension PoemQueryFilter on QueryBuilder<Poem, Poem, QFilterCondition> {
         property: r'author',
         value: '',
       ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'authorWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'authorWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'authorWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'authorWords',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'authorWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'authorWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'authorWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'authorWords',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'authorWords',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition>
+      authorWordsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'authorWords',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'authorWords',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'authorWords',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'authorWords',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'authorWords',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'authorWords',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> authorWordsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'authorWords',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -639,6 +1074,220 @@ extension PoemQueryFilter on QueryBuilder<Poem, Poem, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'poemWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'poemWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'poemWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'poemWords',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'poemWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'poemWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'poemWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'poemWords',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'poemWords',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'poemWords',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'poemWords',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'poemWords',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'poemWords',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'poemWords',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'poemWords',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> poemWordsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'poemWords',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Poem, Poem, QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -764,6 +1413,221 @@ extension PoemQueryFilter on QueryBuilder<Poem, Poem, QFilterCondition> {
         property: r'title',
         value: '',
       ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'titleWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'titleWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'titleWords',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'titleWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'titleWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'titleWords',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'titleWords',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'titleWords',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition>
+      titleWordsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'titleWords',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'titleWords',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'titleWords',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'titleWords',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'titleWords',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'titleWords',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QAfterFilterCondition> titleWordsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'titleWords',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 }
@@ -916,6 +1780,12 @@ extension PoemQueryWhereDistinct on QueryBuilder<Poem, Poem, QDistinct> {
     });
   }
 
+  QueryBuilder<Poem, Poem, QDistinct> distinctByAuthorWords() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'authorWords');
+    });
+  }
+
   QueryBuilder<Poem, Poem, QDistinct> distinctByFavoriteTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'favoriteTime');
@@ -935,10 +1805,22 @@ extension PoemQueryWhereDistinct on QueryBuilder<Poem, Poem, QDistinct> {
     });
   }
 
+  QueryBuilder<Poem, Poem, QDistinct> distinctByPoemWords() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'poemWords');
+    });
+  }
+
   QueryBuilder<Poem, Poem, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Poem, Poem, QDistinct> distinctByTitleWords() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'titleWords');
     });
   }
 }
@@ -953,6 +1835,12 @@ extension PoemQueryProperty on QueryBuilder<Poem, Poem, QQueryProperty> {
   QueryBuilder<Poem, String, QQueryOperations> authorProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'author');
+    });
+  }
+
+  QueryBuilder<Poem, List<String>, QQueryOperations> authorWordsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'authorWords');
     });
   }
 
@@ -974,9 +1862,21 @@ extension PoemQueryProperty on QueryBuilder<Poem, Poem, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Poem, List<String>, QQueryOperations> poemWordsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'poemWords');
+    });
+  }
+
   QueryBuilder<Poem, String, QQueryOperations> titleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'title');
+    });
+  }
+
+  QueryBuilder<Poem, List<String>, QQueryOperations> titleWordsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'titleWords');
     });
   }
 }

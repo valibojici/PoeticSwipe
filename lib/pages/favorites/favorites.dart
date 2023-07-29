@@ -25,7 +25,7 @@ class _FavoritesState extends State<Favorites>
         if (favoritesProvider.favoritesIds.isEmpty) {
           return const Center(child: Text('No saved poems'));
         }
-        return ListView.builder(
+        return ListView.separated(
           itemCount: favoritesProvider.loadedPoems.length +
               (favoritesProvider.loadedAllPoems ? 0 : 1),
           itemBuilder: (context, index) {
@@ -44,6 +44,7 @@ class _FavoritesState extends State<Favorites>
               ),
             );
           },
+          separatorBuilder: (context, index) => const Divider(),
         );
       },
     );

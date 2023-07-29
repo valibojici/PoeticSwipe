@@ -280,29 +280,48 @@ void main() {
       expect(initialPoems.map((e) => e.favoriteTime), equals([null, null]));
     });
 
-    test('favorites stream', () async {
+    test('searching', () async {
       PoemRepository poemRepository =
           PoemRepository(getIt.get<IsarProviderI>());
+
       List<Poem> initialPoems = [
-        Poem(title: 'title1', author: '', poem: ''),
-        Poem(title: 'title2', author: '', poem: ''),
+        Poem(title: 'title1', author: 'author1', poem: 'poem1'),
+        Poem(title: 'word', author: 'author1', poem: 'poem2'),
+        Poem(title: 'title3', author: 'author2', poem: 'word word word'),
+        Poem(
+            title: 'titlu',
+            author: 'Nichita Stănescu',
+            poem: 'Mi-e dor de tine\nMi-e tine de tine...'),
       ];
       await poemRepository.populate(initialPoems);
 
-      Stream<List<int>> favoriteStream = await poemRepository.favoritesStream();
+      List<int> ids;
+      ids = await poemRepository.getByText('title1', title: true);
+      expect(ids, equals([1]));
 
-      expectLater(
-          favoriteStream,
-          emitsInOrder([
-            [],
-            [initialPoems[0].id],
-            [initialPoems[1].id, initialPoems[0].id],
-            [initialPoems[1].id],
-          ]));
+      ids = await poemRepository.getByText('word', title: true);
+      expect(ids, equals([2]));
 
-      await poemRepository.toggleFavorite(initialPoems[0]);
-      await poemRepository.toggleFavorite(initialPoems[1]);
-      await poemRepository.toggleFavorite(initialPoems[0]);
+      ids = await poemRepository.getByText('word', title: true, body: true);
+      expect(ids, equals([2, 3]));
+
+      ids = await poemRepository.getByText('author', author: true);
+      expect(ids, equals([1, 2, 3]));
+
+      ids = await poemRepository.getByText('1',
+          title: true, body: true, author: true);
+      expect(ids, equals([1, 2]));
+
+      ids = await poemRepository.getByText('dsadsd',
+          title: true, body: true, author: true);
+      expect(ids, equals([]));
+
+      ids = await poemRepository.getByText('Stănescu', author: true);
+      expect(ids, equals([4]));
+
+      ids = await poemRepository.getByText('tine de tine',
+          title: true, author: true, body: true);
+      expect(ids, equals([4]));
     });
   });
 

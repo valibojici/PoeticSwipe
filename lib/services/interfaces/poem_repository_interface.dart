@@ -12,4 +12,10 @@ abstract class PoemRepositoryI {
 
   Future<List<int>> getFavorites();
   Future<void> toggleFavorite(Poem poem);
+
+  Future<List<int>> getByText(String text,
+      {bool title = false,
+      bool body = false,
+      bool author = false,
+      exact = false});
 }

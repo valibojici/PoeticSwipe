@@ -75,4 +75,61 @@ class PoemRepository implements PoemRepositoryI {
         .idProperty()
         .findAll();
   }
+
+  @override
+  Future<List<int>> getByText(String text,
+      {bool title = false,
+      bool body = false,
+      bool author = false,
+      exact = false}) async {
+    final Isar db = await _isarProvider.open();
+
+    // text = text.replaceAll(RegExp(r'(a|ă|â)'), '(a|ă|â)');
+    // text = text.replaceAll(RegExp(r'(A|Ă|Â)'), '(A|Ă|Â)');
+    // text.replaceAllMapped(RegExp(r'(a|ă|â)'), (match) => null)
+    if (exact) {
+      List<String> words = Isar.splitWords(text);
+      return await db.poems
+          .filter()
+          .optional(
+            title,
+            (q) => q.allOf(
+                words,
+                (q, element) =>
+                    q.titleWordsElementEqualTo(element, caseSensitive: false)),
+          )
+          .or()
+          .optional(
+            body,
+            (q) => q.allOf(
+                words,
+                (q, element) =>
+                    q.poemWordsElementEqualTo(element, caseSensitive: false)),
+          )
+          .or()
+          .optional(
+            author,
+            (q) => q.allOf(
+                words,
+                (q, element) =>
+                    q.authorWordsElementEqualTo(element, caseSensitive: false)),
+          )
+          .idProperty()
+          .findAll();
+    }
+
+    if (!exact) {
+      text = '*$text*';
+    }
+
+    return await db.poems
+        .filter()
+        .optional(title, (q) => q.titleMatches(text, caseSensitive: false))
+        .or()
+        .optional(body, (q) => q.poemMatches(text, caseSensitive: false))
+        .or()
+        .optional(author, (q) => q.authorMatches(text, caseSensitive: false))
+        .idProperty()
+        .findAll();
+  }
 }
