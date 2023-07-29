@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:poetry_app/pages/favorites/favorites.dart';
 import 'package:poetry_app/pages/home/home.dart';
+import 'package:poetry_app/pages/search/search.dart';
 import 'package:poetry_app/pages/settings/settings.dart';
 
 class MainScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _pages = [
         const Home(),
+        const Search(),
         const Favorites(),
       ];
     });
@@ -50,6 +52,7 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _currentIndex,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
               icon: Icon(Icons.favorite), label: 'Favorites'),
         ],

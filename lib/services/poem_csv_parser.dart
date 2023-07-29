@@ -19,7 +19,7 @@ class PoemCsvParser implements PoemCsvParserI {
     return poemList
         .map(
           (e) => Poem(
-            title: e[fieldsMap['Title']!],
+            title: e[fieldsMap['Title']!].toString(),
             author: e[fieldsMap['Author']!],
             poem: e[fieldsMap['Poem']!]
                 .toString()
