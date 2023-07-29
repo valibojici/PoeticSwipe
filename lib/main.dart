@@ -21,10 +21,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupDI();
-  final Future<void> loadDB = GetIt.I
-      .get<PoemCsvParserI>()
-      .parse()
-      .then((poems) => GetIt.I.get<PoemRepositoryI>().populate(poems));
+  final count = await GetIt.I.get<PoemRepositoryI>().count();
+  final needInit = count == 0;
+  print(count);
+  final Future<void> loadDB = needInit
+      ? GetIt.I.get<PoemCsvParserI>().parse().then((poems) async {
+          List<Future<void>> futures = [];
+          for (int i = 0; i < poems.length; i += 15) {
+            futures.add(GetIt.I
+                .get<PoemRepositoryI>()
+                .populate(poems.skip(i).take(15).toList()));
+            // return
+          }
+
+          await Future.wait(futures);
+        })
+      : Future(() => null);
 
   // init flutter_local_notifications
   await GetIt.I.get<NotificationService>().init();
@@ -66,7 +78,20 @@ class PoetryApp extends StatelessWidget {
   }
 
   Widget _loading() {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Perfoming first time setup (populating database)...'),
+            SizedBox(
+              height: 20,
+            ),
+            CircularProgressIndicator(),
+          ],
+        ),
+      ),
+    );
   }
 }
 
