@@ -17,10 +17,7 @@ class PoemRepository implements PoemRepositoryI {
   @override
   Future<void> populate(List<Poem> poems) async {
     final Isar db = await _isarProvider.open();
-    final int count = await db.poems.count();
-    if (count == 0) {
-      await db.writeTxn(() => db.poems.putAll(poems));
-    }
+    await db.writeTxn(() => db.poems.putAll(poems));
   }
 
   @override
@@ -131,5 +128,12 @@ class PoemRepository implements PoemRepositoryI {
         .optional(author, (q) => q.authorMatches(text, caseSensitive: false))
         .idProperty()
         .findAll();
+  }
+
+  @override
+  Future<int> count() async {
+    final Isar db = await _isarProvider.open();
+    final int count = await db.poems.count();
+    return count;
   }
 }
