@@ -35,7 +35,6 @@ dependencies:
   isar_flutter_libs: *isar_version # contains Isar Core
   path_provider: ^2.0.0
   get_it: ^7.0.0
-  csv: ^5.0.0
   shared_preferences: ^2.1.2
   flutter_local_notifications: ^14.1.1
   timezone: ^0.9.2
@@ -46,6 +45,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   provider: ^6.0.5
+  archive: ^3.3.7
 
 dev_dependencies:
   flutter_test:
@@ -73,7 +73,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/poems.csv
+    # - assets/poems.csv
+    - assets/poems.isar.zip
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
