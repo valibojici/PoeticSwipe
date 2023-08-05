@@ -18,5 +18,6 @@ abstract class PoemRepositoryI {
       {bool title = false,
       bool body = false,
       bool author = false,
-      exact = false});
+      exact = false,
+      wordSearch = false});
 }
