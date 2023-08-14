@@ -78,13 +78,11 @@ class PoemRepository implements PoemRepositoryI {
       {bool title = false,
       bool body = false,
       bool author = false,
-      exact = false}) async {
+      exact = false,
+      wordSearch = false}) async {
     final Isar db = await _isarProvider.open();
 
-    // text = text.replaceAll(RegExp(r'(a|ă|â)'), '(a|ă|â)');
-    // text = text.replaceAll(RegExp(r'(A|Ă|Â)'), '(A|Ă|Â)');
-    // text.replaceAllMapped(RegExp(r'(a|ă|â)'), (match) => null)
-    if (exact) {
+    if (wordSearch) {
       List<String> words = Isar.splitWords(text);
       return await db.poems
           .filter()
@@ -115,9 +113,13 @@ class PoemRepository implements PoemRepositoryI {
           .findAll();
     }
 
+    // if !exact => split text in words using Isar
     if (!exact) {
-      text = '*$text*';
+      text = Isar.splitWords(text).join('*');
     }
+
+    // find text anywhere
+    text = '*$text*';
 
     return await db.poems
         .filter()

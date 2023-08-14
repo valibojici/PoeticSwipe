@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:poetry_app/models/poem/poem.dart';
 import 'package:poetry_app/pages/poem/poem.dart';
+import 'package:poetry_app/pages/search/custom_tooltip.dart';
+import 'package:poetry_app/pages/search/text_checkbox.dart';
 import 'package:poetry_app/services/interfaces/poem_repository_interface.dart';
 
 class Search extends StatefulWidget {
@@ -19,7 +21,8 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
   List<Poem> _loadedPoems = [];
   bool _noResults = false;
   final FocusNode _focusNode = FocusNode();
-  bool _exactMatch = false;
+  bool _exactMatch = true;
+  bool _wordOnly = false;
 
   final Map<String, bool> _filters = {
     'Title': true,
@@ -36,16 +39,17 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return GestureDetector(
       onTap: () => _focusNode.unfocus(),
       child: Column(
         mainAxisSize: MainAxisSize.max,
-        children: [_searchBar(), Expanded(child: _results())],
+        children: [_searchBar(context), Expanded(child: _results())],
       ),
     );
   }
 
-  Widget _searchBar() {
+  Widget _searchBar(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -121,7 +125,8 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
           title: _filters['Title']!,
           body: _filters['Poem']!,
           author: _filters['Author']!,
-          exact: _exactMatch);
+          exact: _exactMatch,
+          wordSearch: _wordOnly);
       setState(() {
         _noResults = ids.isEmpty;
         _poemIds = ids;
@@ -139,7 +144,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
               .map((e) => e.key)
               .toList(),
           onSelectionChanged: (values) => print(values),
-          title: Text('Searching for'),
+          title: const Text('Searching for'),
           items: _filters.keys.map((e) => MultiSelectItem(e, e)).toList(),
           listType: MultiSelectListType.CHIP,
           selectedColor: Theme.of(context).colorScheme.primary,
@@ -168,7 +173,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 
   _results() {
     if (_noResults) {
-      return Center(child: Text('No results...'));
+      return const Center(child: Text('No results...'));
     }
 
     return ListView.separated(
@@ -177,7 +182,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
       itemBuilder: (context, index) {
         if (index == _loadedPoems.length) {
           _loadPoems();
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         final poem = _loadedPoems[index];
         return ListTile(
@@ -195,20 +200,47 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
   _checkbox() {
     return Row(
       children: [
-        Checkbox(
-          value: _exactMatch,
-          onChanged: (value) {
-            setState(() {
-              _exactMatch = value!;
-            });
-          },
+        Row(
+          children: [
+            TextCheckbox(
+              text: 'Word only search',
+              checked: _wordOnly,
+              onTap: (value) => setState(() {
+                _wordOnly = value!;
+                _exactMatch = false;
+              }),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(5.0),
+              child: CustomTooltip(
+                  message:
+                      'Searching for "abc xyz" finds poems that contain the words "abc" and "xyz" in ANY order'),
+            )
+          ],
         ),
-        Text('Word search')
+        Row(
+          children: [
+            TextCheckbox(
+              text: 'Exact match',
+              checked: _exactMatch,
+              onTap: (value) => setState(() {
+                _exactMatch = value!;
+                _wordOnly = false;
+              }),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(5.0),
+              child: CustomTooltip(
+                  message:
+                      'Searching for "abc xyz" finds poems that CONTAIN the substring "abc xyz". Otherwise it finds poems that contain the substrings "abc" and "xyz" in order'),
+            )
+          ],
+        ),
       ],
     );
   }
 
-  bool _keepAlive = true;
+  final bool _keepAlive = true;
   @override
   bool get wantKeepAlive => _keepAlive;
 }

@@ -285,12 +285,12 @@ void main() {
           PoemRepository(getIt.get<IsarProviderI>());
 
       List<Poem> initialPoems = [
-        Poem(title: 'title1', author: 'author1', poem: 'poem1'),
+        Poem(title: 'title1', author: 'author1', poem: 'abc abcd qwerty'),
         Poem(title: 'word', author: 'author1', poem: 'poem2'),
-        Poem(title: 'title3', author: 'author2', poem: 'word word word'),
+        Poem(title: 'title3', author: 'author2', poem: 'abcd qwerty abc'),
         Poem(
-            title: 'titlu',
-            author: 'Nichita Stănescu',
+            title: 'Îmi pasă',
+            author: 'Adrian Păunescu',
             poem: 'Mi-e dor de tine\nMi-e tine de tine...'),
       ];
       await poemRepository.populate(initialPoems);
@@ -299,28 +299,21 @@ void main() {
       ids = await poemRepository.getByText('title1', title: true);
       expect(ids, equals([1]));
 
-      ids = await poemRepository.getByText('word', title: true);
-      expect(ids, equals([2]));
+      ids = await poemRepository.getByText('wert', body: true);
+      expect(ids, equals([1, 3]));
 
-      ids = await poemRepository.getByText('word', title: true, body: true);
-      expect(ids, equals([2, 3]));
+      ids = await poemRepository.getByText('abc qwerty',
+          body: true, wordSearch: true);
+      expect(ids, equals([1, 3]));
 
-      ids = await poemRepository.getByText('author', author: true);
-      expect(ids, equals([1, 2, 3]));
-
-      ids = await poemRepository.getByText('1',
-          title: true, body: true, author: true);
-      expect(ids, equals([1, 2]));
-
-      ids = await poemRepository.getByText('dsadsd',
-          title: true, body: true, author: true);
+      ids =
+          await poemRepository.getByText('abc qwerty', body: true, exact: true);
       expect(ids, equals([]));
 
-      ids = await poemRepository.getByText('Stănescu', author: true);
-      expect(ids, equals([4]));
+      ids = await poemRepository.getByText('abc qwerty', body: true);
+      expect(ids, equals([1, 3]));
 
-      ids = await poemRepository.getByText('tine de tine',
-          title: true, author: true, body: true);
+      ids = await poemRepository.getByText('Îmi pasă', title: true);
       expect(ids, equals([4]));
     });
   });
