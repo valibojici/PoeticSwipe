@@ -20,4 +20,6 @@ abstract class PoemRepositoryI {
       bool author = false,
       exact = false,
       wordSearch = false});
+
+  Future<List<int>> getLastViewed({DateTime? from, DateTime? to});
 }
