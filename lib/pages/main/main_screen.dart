@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:poetry_app/pages/favorites/favorites.dart';
 import 'package:poetry_app/pages/home/home.dart';
+import 'package:poetry_app/pages/main/custom_drawer.dart';
 import 'package:poetry_app/pages/search/search.dart';
 import 'package:poetry_app/pages/settings/settings.dart';
 
@@ -42,6 +43,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         actions: [_settingsButton(context)],
       ),
+      drawer: CustomDrawer(),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: _pageController,
