@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:poetry_app/models/poem/poem.dart';
 import 'package:poetry_app/providers/favorite_provider.dart';
-import 'package:poetry_app/providers/poem_provider.dart';
 import 'package:provider/provider.dart';
 
 class PoemView extends StatelessWidget {

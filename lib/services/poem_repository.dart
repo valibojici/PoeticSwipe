@@ -138,4 +138,18 @@ class PoemRepository implements PoemRepositoryI {
     final int count = await db.poems.count();
     return count;
   }
+
+  @override
+  Future<List<int>> getLastViewed({DateTime? from, DateTime? to}) async {
+    final Isar db = await _isarProvider.open();
+    from ??= DateTime(1970);
+    to ??= DateTime.now();
+
+    return (await db.poems
+        .filter()
+        .lastAccessBetween(from, to)
+        .sortByLastAccessDesc()
+        .idProperty()
+        .findAll());
+  }
 }

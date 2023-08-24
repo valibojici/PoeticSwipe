@@ -316,6 +316,49 @@ void main() {
       ids = await poemRepository.getByText('Îmi pasă', title: true);
       expect(ids, equals([4]));
     });
+
+    test('Last view time query', () async {
+      PoemRepository poemRepository =
+          PoemRepository(getIt.get<IsarProviderI>());
+
+      List<Poem> initialPoems = [
+        Poem(
+            title: 'title1',
+            poem: 'poem1',
+            author: 'author1',
+            lastAccessTime: DateTime(2023, 1, 1, 23, 30)),
+        Poem(
+            title: 'title2',
+            poem: 'poem2',
+            author: 'author2',
+            lastAccessTime: DateTime(2023, 1, 2, 12, 30)),
+        Poem(
+            title: 'title3',
+            poem: 'poem3',
+            author: 'author3',
+            lastAccessTime: DateTime(2023, 1, 3, 10, 30)),
+      ];
+      await poemRepository.populate(initialPoems);
+
+      List<int> ids;
+      ids =
+          await poemRepository.getLastViewed(from: DateTime(2023, 1, 1, 0, 0));
+      expect(ids, equals([3, 2, 1]));
+
+      ids = await poemRepository.getLastViewed(
+          from: DateTime(2023, 1, 1, 0, 0),
+          to: DateTime(2023, 1, 2, 12, 30, 1));
+      expect(ids, equals([2, 1]));
+
+      ids = await poemRepository.getLastViewed(
+          from: DateTime(2023, 1, 1, 0, 0), to: DateTime(2023, 1, 2, 12, 30));
+      expect(ids, equals([2, 1]));
+
+      ids = await poemRepository.getLastViewed(
+          from: DateTime(2023, 1, 1, 0, 0),
+          to: DateTime(2023, 1, 2, 12, 29, 59));
+      expect(ids, equals([1]));
+    });
   });
 
   tearDownAll(() async {
