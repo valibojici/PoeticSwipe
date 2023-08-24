@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:poetry_app/services/interfaces/settings_interface.dart';
-import 'package:poetry_app/services/settings.dart';
+import 'package:PoeticSwipe/services/interfaces/settings_interface.dart';
+import 'package:PoeticSwipe/services/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeSharedPreferences extends Fake implements SharedPreferences {

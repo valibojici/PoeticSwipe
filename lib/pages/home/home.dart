@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:poetry_app/pages/favorites/favorites.dart';
-import 'package:poetry_app/pages/explore/explore.dart';
-import 'package:poetry_app/pages/home/custom_drawer.dart';
-import 'package:poetry_app/pages/search/search.dart';
-import 'package:poetry_app/pages/settings/settings.dart';
+import 'package:PoeticSwipe/pages/favorites/favorites.dart';
+import 'package:PoeticSwipe/pages/explore/explore.dart';
+import 'package:PoeticSwipe/pages/home/custom_drawer.dart';
+import 'package:PoeticSwipe/pages/search/search.dart';
+import 'package:PoeticSwipe/pages/settings/settings.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

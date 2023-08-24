@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:poetry_app/services/interfaces/root_bundle_provider_interface.dart';
+import 'package:PoeticSwipe/services/interfaces/root_bundle_provider_interface.dart';
 
 class RootBundleProvider implements RootBundleProviderI {
   @override

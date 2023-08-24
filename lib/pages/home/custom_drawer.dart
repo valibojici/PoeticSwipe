@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:poetry_app/pages/history/viewed_poems.dart';
+import 'package:PoeticSwipe/pages/history/viewed_poems.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});

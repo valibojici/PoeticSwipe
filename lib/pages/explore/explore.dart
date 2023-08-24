@@ -1,8 +1,8 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/material.dart';
-import 'package:poetry_app/pages/explore/poem_card.dart';
-import 'package:poetry_app/models/poem/poem.dart';
-import 'package:poetry_app/providers/poem_provider.dart';
+import 'package:PoeticSwipe/pages/explore/poem_card.dart';
+import 'package:PoeticSwipe/models/poem/poem.dart';
+import 'package:PoeticSwipe/providers/poem_provider.dart';
 
 import 'package:provider/provider.dart';
 

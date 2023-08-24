@@ -1,7 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:poetry_app/models/poem/poem.dart';
-import 'package:poetry_app/services/interfaces/isar_provider_interface.dart';
+import 'package:PoeticSwipe/models/poem/poem.dart';
+import 'package:PoeticSwipe/services/interfaces/isar_provider_interface.dart';
 
 class IsarProvider implements IsarProviderI {
   static Isar? _db;
