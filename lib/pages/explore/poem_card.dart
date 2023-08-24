@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:poetry_app/models/poem/poem.dart';
-import 'package:poetry_app/pages/poem/poem.dart';
-import 'package:poetry_app/providers/favorite_provider.dart';
-import 'package:poetry_app/themes/theme.dart';
+import 'package:PoeticSwipe/models/poem/poem.dart';
+import 'package:PoeticSwipe/pages/poem/poem.dart';
+import 'package:PoeticSwipe/providers/favorite_provider.dart';
+import 'package:PoeticSwipe/themes/theme.dart';
 import 'package:provider/provider.dart';
 
 class PoemCard extends StatelessWidget {

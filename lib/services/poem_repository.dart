@@ -1,7 +1,7 @@
 import 'package:isar/isar.dart';
-import 'package:poetry_app/models/poem/poem.dart';
-import 'package:poetry_app/services/interfaces/isar_provider_interface.dart';
-import 'package:poetry_app/services/interfaces/poem_repository_interface.dart';
+import 'package:PoeticSwipe/models/poem/poem.dart';
+import 'package:PoeticSwipe/services/interfaces/isar_provider_interface.dart';
+import 'package:PoeticSwipe/services/interfaces/poem_repository_interface.dart';
 
 class PoemRepository implements PoemRepositoryI {
   final IsarProviderI _isarProvider;

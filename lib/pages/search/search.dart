@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
-import 'package:poetry_app/models/poem/poem.dart';
-import 'package:poetry_app/pages/poem/poem.dart';
-import 'package:poetry_app/pages/search/custom_tooltip.dart';
-import 'package:poetry_app/pages/search/text_checkbox.dart';
-import 'package:poetry_app/services/interfaces/poem_repository_interface.dart';
+import 'package:PoeticSwipe/models/poem/poem.dart';
+import 'package:PoeticSwipe/pages/poem/poem.dart';
+import 'package:PoeticSwipe/pages/search/custom_tooltip.dart';
+import 'package:PoeticSwipe/pages/search/text_checkbox.dart';
+import 'package:PoeticSwipe/services/interfaces/poem_repository_interface.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});

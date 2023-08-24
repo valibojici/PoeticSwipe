@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:poetry_app/services/interfaces/settings_interface.dart';
-import 'package:poetry_app/services/notifications.dart';
-import 'package:poetry_app/themes/theme.dart';
+import 'package:PoeticSwipe/services/interfaces/settings_interface.dart';
+import 'package:PoeticSwipe/services/notifications.dart';
+import 'package:PoeticSwipe/themes/theme.dart';
 import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {

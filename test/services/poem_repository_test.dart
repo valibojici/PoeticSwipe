@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
-import 'package:poetry_app/models/poem/poem.dart';
-import 'package:poetry_app/services/poem_repository.dart';
-import 'package:poetry_app/services/interfaces/isar_provider_interface.dart';
+import 'package:PoeticSwipe/models/poem/poem.dart';
+import 'package:PoeticSwipe/services/poem_repository.dart';
+import 'package:PoeticSwipe/services/interfaces/isar_provider_interface.dart';
 
 class FakeIsarProvider extends Fake implements IsarProviderI {
   static Isar? _db;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import 'package:poetry_app/models/poem/poem.dart';
-import 'package:poetry_app/pages/poem/poem.dart';
-import 'package:poetry_app/services/interfaces/poem_repository_interface.dart';
+import 'package:PoeticSwipe/models/poem/poem.dart';
+import 'package:PoeticSwipe/pages/poem/poem.dart';
+import 'package:PoeticSwipe/services/interfaces/poem_repository_interface.dart';
 
 class ViewedPoems extends StatefulWidget {
   const ViewedPoems({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:poetry_app/pages/home/home.dart';
-import 'package:poetry_app/providers/favorite_provider.dart';
-import 'package:poetry_app/providers/poem_provider.dart';
-import 'package:poetry_app/themes/theme.dart';
+import 'package:PoeticSwipe/pages/home/home.dart';
+import 'package:PoeticSwipe/providers/favorite_provider.dart';
+import 'package:PoeticSwipe/providers/poem_provider.dart';
+import 'package:PoeticSwipe/themes/theme.dart';
 import 'package:provider/provider.dart';
 
 class PoeticSwipe extends StatelessWidget {

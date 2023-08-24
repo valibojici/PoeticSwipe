@@ -1,4 +1,4 @@
-import 'package:poetry_app/services/interfaces/settings_interface.dart';
+import 'package:PoeticSwipe/services/interfaces/settings_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService implements SettingsServiceI {

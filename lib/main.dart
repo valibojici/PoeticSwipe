@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:poetry_app/app/initialization.dart';
-import 'package:poetry_app/app/poetic_swipe.dart';
+import 'package:PoeticSwipe/app/initialization.dart';
+import 'package:PoeticSwipe/app/poetic_swipe.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
