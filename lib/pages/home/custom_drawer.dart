@@ -10,12 +10,12 @@ class CustomDrawer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
         child: ListView(children: [
           ListTile(
-            leading: Icon(Icons.history),
-            title: Text("Today's poems"),
+            leading: const Icon(Icons.history),
+            title: const Text("Today's poems"),
             onTap: () {
               Navigator.of(context).pop();
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ViewedPoems(),
+                builder: (context) => const ViewedPoems(),
               ));
             },
           )
