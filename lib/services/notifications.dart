@@ -36,7 +36,7 @@ class NotificationService {
     await _notifications.cancelAll();
   }
 
-  Future scheduleDailyNotification({
+  Future<bool> scheduleDailyNotification({
     int id = 0,
     String? title,
     String? body,
@@ -44,6 +44,16 @@ class NotificationService {
     int hour = 10,
     int minute = 0,
   }) async {
+    final permission = await _notifications
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
+            ?.requestPermission() ??
+        true;
+
+    if (!permission) {
+      return false;
+    }
+
     getNextDate() {
       final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
       tz.TZDateTime scheduledDate =
@@ -60,12 +70,14 @@ class NotificationService {
       body,
       getNextDate(),
       await _notificationDetails(),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       payload: payload,
       matchDateTimeComponents: DateTimeComponents.time,
     );
+
+    return true;
   }
 
   @pragma('vm:entry-point')
