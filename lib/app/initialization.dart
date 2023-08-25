@@ -11,7 +11,7 @@ import 'package:PoeticSwipe/services/isar_provider.dart';
 import 'package:PoeticSwipe/services/notifications.dart';
 import 'package:PoeticSwipe/services/poem_repository.dart';
 import 'package:PoeticSwipe/services/root_bundle_provider.dart';
-import 'package:PoeticSwipe/services/settings.dart';
+import 'package:PoeticSwipe/services/settingsService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 
@@ -26,7 +26,7 @@ Future<void> initializeDatabase() async {
   int poemCount = (await GetIt.I.get<PoemRepositoryI>().count());
   if (poemCount > 0) {
     // poems loaded
-    return;
+    return Future.value();
   }
 
   final String appDirPath = (await getApplicationDocumentsDirectory()).path;
